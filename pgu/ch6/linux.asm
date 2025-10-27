@@ -1,0 +1,12 @@
+s_read equ 0
+s_write equ 1
+s_open equ 2
+s_close equ 3
+s_brk equ 12
+s_exit equ 60
+f_stdin equ 0
+f_stdout equ 1
+f_stderr equ 2
+o_rdonly equ 0o0000_0000
+o_creat_wronly_trunc equ 0o0000_1101
+eof equ 0
