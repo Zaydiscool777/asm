@@ -1,5 +1,5 @@
 section .text
-global strlen
+global strlen:function
 	strlen:
 enter 0, 0
 mov rax, 0 ; cx and ax are swapped because... optimization!
