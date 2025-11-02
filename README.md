@@ -1,7 +1,7 @@
 # assembling
 ```bash
-nasm -@fn FILE
-nasm -f elf64 -g -w+all FILE # actually fn
+nasm -@rn FILE
+nasm -f elf64 -g -w+all FILE # actually rn
 ```
 remove `-g` if not debugging;
 `-g` is helpful in gdb
