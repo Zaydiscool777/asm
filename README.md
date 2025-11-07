@@ -1,3 +1,9 @@
+- [x] step 1. doing the main parts of pgu i want to do
+- [ ] step 2. doing the main parts of pgu i don't
+- [ ] step 3. doing the exercises
+- [ ] step 4. try implementing basic x11? or gnome?
+  - [ ] research
+
 # assembling
 ```bash
 nasm -@rn FILE
@@ -8,6 +14,7 @@ remove `-g` if not debugging;
 
 # linking asm and c
 ```bash
+# this can happen in the ./linktest directory
 nasm -f elf64 -o linktest_asm.o linktest_asm.asm
 gcc -c -o linktest_c.o linktest_c.c -O0
 gcc -no-pie -o linktest linktest_c.o linktest_asm.o -lc
@@ -44,7 +51,7 @@ ld "$CRT1" "$CRTI" \
 	-o EXEC
 ```
 ### me
-For me, the printed file names were all basically:
+for me, the printed file names were all basically:
 ```
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/FILE
 # which becomes
@@ -82,9 +89,87 @@ the c calling convention in convoluted, but here is a summary:
 ## other c stuff
 because of `crt1.o`, you use `main` instead of `_start`.
 
-# links
+# optimization
+- optimize AFTER the product is clean
+  - everything is documented
+  - as well as works by the documentation
+  - and the code is modular
+- try not to in early development
+- use a profiler tool, like `gprof` (standard)
+- local optimization is about the program specifically
+  - e.g. fastest instructions/methods
+  - precomputing calculations
+  - caching results
+  - location of data (where it is -> how fast to access)
+  - register usage
+  - inline functions (macros)
+  - optimized instructions (`mov,0` -> `xor`, `deccx;jz` -> `loop`)
+  - addressing modes (`[const]` -> `[reg]` -> `[reg + const * reg]`)
+  - data alignment (less variation of data sizes)
+- global optimization is about what the program uses
+  - e.g. inputs and outputs
+  - usually about restructuring rather than solving
+  - parallelization
+  - statelessness
+
+# further information
+## pgu suggestions
+### Bottom Up
+- Programming from the Ground Up by Jonathan Bartlett
+- Introduction to Algorithms by Thomas H. Cormen, Charles E. Leiserson, and
+Ronald L. Rivest
+- The Art of Computer Programming by Donald Knuth (3 volume set - volume 1
+is the most important)
+- Programming Languages by Samuel N. Kamin
+- Modern Operating Systems by Andrew Tanenbaum
+- Linkers and Loaders by John Levine
+- Computer Organization and Design: The Hardware/Software Interface by
+David Patterson and John Hennessy
+### Top Down
+- How to Design Programs by Matthias Felleisen, Robert Bruce Findler, Matthew
+Flatt, and Shiram Krishnamurthi, available online at http://www.htdp.org/
+- Simply Scheme: An Introduction to Computer Science by Brian Harvey and
+Matthew Wright
+- How to Think Like a Computer Scientist: Learning with Python by Allen
+Downey, Jeff Elkner, and Chris Meyers, available online at
+http://www.greenteapress.com/thinkpython/
+- Structure and Interpretation of Computer Programs by Harold Abelson and
+Gerald Jay Sussman with Julie Sussman, available online at
+http://mitpress.mit.edu/sicp/
+- Design Patterns by Erich Gamma, Richard Helm, Ralph Johnson, and John
+Vlissides
+- What not How: The Rules Approach to Application Development by Chris Date
+- The Algorithm Design Manual by Steve Skiena
+- Programming Language Pragmatics by Michael Scott
+- Essentials of Programming Languages by Daniel P. Friedman, Mitchell Wand,
+and Christopher T. Haynes
+### Middle Out (specialized)
+- Programming Perl by Larry Wall, Tom Christiansen, and Jon Orwant
+- Common LISP: The Language by Guy R. Steele
+- ANSI Common LISP by Paul Graham
+- The C Programming Language by Brian W. Kernighan and Dennis M. Ritchie
+- The Waite Group’s C Primer Plus by Stephen Prata
+- The C++ Programming Language by Bjarne Stroustrup
+- Thinking in Java by Bruce Eckel, available online at
+http://www.mindview.net/Books/TIJ/
+- The Scheme Programming Language by Kent Dybvig
+- Linux Assembly Language Programming by Bob Neveln
+
+## links
 - https://brettapitz.github.io/posts/groundup1/
+  - helped with getting started on nasm
 - https://nasm.us/
+  - docs on nasm
 - https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/
+  - syscalls
+  - https://x64.syscall.sh/
 - https://gaultier.github.io/blog/x11_x64
+  - X11 (graphics) in assembly... crazy!!! 🤯
 - `man` for `nasm:ld:objdump:readelf:patchelf:ldd:nm:ar`
+- https://graphics.stanford.edu/~seander/bithacks.html
+  - kinda faster alternatives to normal instructions
+  - sometimes _very_ c oriented
+- http://www.sandpile.org/
+  - more on intel and amd and stuff
+- https://www.cs.yale.edu/homes/perlis-alan/quotes.html
+  - idk
