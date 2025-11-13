@@ -1,7 +1,8 @@
-	%include "record_def.asm"
-	%include "linux.asm"
-	extern write_record; %include "write_record.asm"
-	%macro new_record 5
+%include "record_def.asm"
+%include "linux.asm"
+extern write_record; %include "write_record.asm"
+
+%macro new_record 5
 %1:
 	db %2
 	db (%1 + 40 - $) dup 0
@@ -10,7 +11,8 @@
 	db %4
 	db (%1 + 320 - $) dup 0
 	dd %5
-	%endmacro
+%endmacro
+
 section .data
 	new_record record1, "Fredrick", "Barlett", \
 	`4242 S Prairie\nTulsa, OK 55555`, 45

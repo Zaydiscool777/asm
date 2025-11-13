@@ -29,15 +29,15 @@ max:
 	enter 0, 0
 	mov rdi, [rbp + 16]
 	mov rax, [rdi]
-	.loop:
-		mov rbx, [rdi]
-		add rdi, 8
-		cmp rbx, 0
-		je .exit
-		cmp rax, rbx
-		jge .loop
-		mov rax, rbx
-		jmp .loop
-	.exit:
-		leave
-		ret
+.loop:
+	mov rbx, [rdi]
+	add rdi, 8
+	cmp rbx, 0
+	je .exit
+	cmp rax, rbx
+	jge .loop
+	mov rax, rbx
+	jmp .loop
+.exit:
+	leave
+	ret

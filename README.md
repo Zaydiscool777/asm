@@ -6,13 +6,13 @@
 
 # assembling
 ```bash
-nasm -@rn FILE
+nasm -@rn FILE # response file
 nasm -f elf64 -g -w+all FILE # actually rn
 ```
 remove `-g` if not debugging;
 `-g` is helpful in gdb
 
-# linking asm and c
+## linking asm and c
 ```bash
 # this can happen in the ./linktest directory
 nasm -f elf64 -o linktest_asm.o linktest_asm.asm
@@ -23,13 +23,13 @@ gcc -no-pie -o linktest linktest_c.o linktest_asm.o -lc
 this is a deprecated behaviour, but the warning still pops
 up for now: `missing .note.GNU-stack section implies executable stack`.
 to fix, add to asm:
-```bash
+```asm
 section .note.GNU-stack noalloc noexec nowrite progbits
 ```
 also, without `-no-pie`, it uses `Scrt1.o`, which is made
 for shared libraries.
 
-## using ld instead of gcc
+### using ld instead of gcc
 **note: gcc is more portable than ld!**
 
 `gcc -print-file-name` can be used for finding the actual files
@@ -50,7 +50,7 @@ ld "$CRT1" "$CRTI" \
 	-L . \
 	-o EXEC
 ```
-### me
+#### me
 for me, the printed file names were all basically:
 ```
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/FILE
@@ -60,7 +60,7 @@ for me, the printed file names were all basically:
 where `FILE` was the argument passed to `gcc`.
 I can also use `/lib64/ld-linux-x86-64.so.2`
 
-# on ld
+## on ld
 use `ld -shared` to make a `.so` instead of a normal `.o`.
 `libNAME.so` allows you to use the flag `-lNAME` to link it.
 although, you should use `-L .` if it is local only.
@@ -73,7 +73,7 @@ usually empty by default, and it will be checked if not empty.
 `ld -r` _combines_ objects.
 `ar` archives static objects?
 
-## calling with c
+### calling with c
 the c calling convention in convoluted, but here is a summary:
 - word inputs are rdi, rsi, rdx, rcx, r8, and r9.
 - word outputs are rax and rdx
@@ -86,7 +86,7 @@ the c calling convention in convoluted, but here is a summary:
 - rest of registers are non-volatile: callee saves
 - obviously, if all registers are full, use stack
   
-## other c stuff
+### other c stuff
 because of `crt1.o`, you use `main` instead of `_start`.
 
 # optimization
@@ -111,6 +111,15 @@ because of `crt1.o`, you use `main` instead of `_start`.
   - usually about restructuring rather than solving
   - parallelization
   - statelessness
+
+# misc
+`COMMAND | code -` opens the piped output into a tab in the same window.
+
+`ds:0x...` in the object/elf dump means it is somewhat external to the actual code. it is still acknowledged by the dumper, of course.
+
+```bash
+ld --dynamic-linker /lib64/ld-linux-x86-64.so.2 add_year_ip.o librecords.so -rpath $PWD -o e
+```
 
 # further information
 ## pgu suggestions
@@ -173,3 +182,12 @@ http://www.mindview.net/Books/TIJ/
   - more on intel and amd and stuff
 - https://www.cs.yale.edu/homes/perlis-alan/quotes.html
   - idk
+- https://gist.github.com/jxu/c3c31504ec75e3862849c37183e03ced
+  - summary: (`_` means a normal number, so `0` instead of `$0`)
+    - `[r] (%)` 
+    - `[r+r] (%,%)`
+    - `[r+c] _(%)`
+    - `[r+c+r] _(%,%)`
+    - `[r+r*c] (%,%,_)`
+    - `[c+r*c] _(,%,_)`
+    - `[r+c*r+c] _(%,%,_)` (really `[c+r+c*r]`)

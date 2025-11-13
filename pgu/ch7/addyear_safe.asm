@@ -3,13 +3,10 @@
 extern read_record
 extern write_record
 section .data
-filename:
-	db "records.dat", 0
-filename2:
-	db "mod_records.dat", 0
+	filename db "records.dat", 0
+	filename2 db "mod_records.dat", 0
 section .bss
-record_buff:
-	resb rec_size
+	record_buff resb rec_size
 section .text
 global _start
 _start:

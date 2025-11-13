@@ -1,4 +1,4 @@
-	%include "linux.asm"
+%include "linux.asm"
 section .data
 nl:
 	db 10, 0

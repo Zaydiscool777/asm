@@ -1,7 +1,7 @@
-	%include "record_def.asm"
-	%include "linux.asm"
-	st_write_buffer equ 16
-	st_filedes equ 24
+%include "record_def.asm"
+%include "linux.asm"
+st_write_buffer equ 16
+st_filedes equ 24
 section .text
 global write_record:function
 write_record:

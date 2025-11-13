@@ -23,6 +23,6 @@ fact:
 	add rsp, 8
 	pop rbx
 	imul rax, rbx ; rax = n * fact(n-1)
-	.end:
-		leave
-		ret
+.end:
+	leave
+	ret

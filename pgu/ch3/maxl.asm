@@ -9,16 +9,16 @@ _start:
 	mov rdi, data_items
 	mov rax, [rdi]
 	mov rbx, rax
-	.loop:
-		cmp rdi, rsi
-		je .exit
-		add rdi, 8
-		mov rax, [rdi]
-		cmp rax, rbx
-		jle .loop
-		mov rbx, rax
-		jmp .loop
-	.exit:
-		mov rax, 60
-		mov rdi, rbx
-		syscall
+.loop:
+	cmp rdi, rsi
+	je .exit
+	add rdi, 8
+	mov rax, [rdi]
+	cmp rax, rbx
+	jle .loop
+	mov rbx, rax
+	jmp .loop
+.exit:
+	mov rax, 60
+	mov rdi, rbx
+	syscall

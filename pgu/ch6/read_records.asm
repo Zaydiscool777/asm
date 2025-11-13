@@ -1,8 +1,8 @@
-	%include "record_def.asm"
-	%include "linux.asm"
-	extern read_record
-	extern strlen
-	extern writenl
+%include "record_def.asm"
+%include "linux.asm"
+extern read_record
+extern strlen
+extern writenl
 	
 section .data
 filename:

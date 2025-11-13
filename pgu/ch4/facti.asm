@@ -13,8 +13,8 @@ fact:
 	enter 0, 0
 	mov rcx, [rbp + 16]
 	mov rax, 1
-	.loop:
-		imul rax, rcx
-		loop .loop
+.loop:
+	imul rax, rcx
+	loop .loop
 	leave
 	ret

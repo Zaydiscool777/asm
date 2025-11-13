@@ -25,13 +25,13 @@ power:
 	mov rbx, [rbp + 16]
 	mov rcx, [rbp + 24]
 	mov rax, 1
-	.loop:
-		cmp rcx, 0
-		je .end
-		dec rcx
-		imul rax, rbx
-		jmp .loop
-	.end:
-		mov rsp, rbp ; leave, then ret
-		pop rbp
-		ret
+.loop:
+	cmp rcx, 0
+	je .end
+	dec rcx
+	imul rax, rbx
+	jmp .loop
+.end:
+	mov rsp, rbp ; leave, then ret
+	pop rbp
+	ret

@@ -1,4 +1,3 @@
-	; this will be very hard...
 section .data
 	s_read equ 0
 	s_write equ 1
@@ -13,95 +12,96 @@ section .data
 	f_stdout equ 1
 	f_stderr equ 2
 	eof equ 0
-	
+
+	arg_c equ 0
+	arg_0 equ 8
+	arg_1 equ 16
+	arg_2 equ 24
+
 section .bss
 	buffer_size equ 500
 	buffer_data resb buffer_size
+
+	file_in resq 1
+	file_out resq 1
 	
 section .text
-	st_size_reserve equ 16
-	st_fd_in equ -8
-	st_fd_out equ -16
-	; seperated by 16 because of simd and some stuff
-	; it's obviously easier to sep. by a constant 16 than by varying amounts
-	st_argc equ 0
-	st_argv_0 equ 16
-	st_argv_1 equ 24
-	st_argv_2 equ 32
-	
 global _start
 _start:
-	enter st_size_reserve, 0
-	; open input file
+	; if argc is 0, use stdin/stdout
+	mov rax, [rsp + arg_c]
+	cmp rax, 3
+	jge .open_files
+	mov qword [rsp + arg_1], f_stdin
+	mov qword [rsp + arg_2], f_stdout
+	jmp .loop
+.open_files:
 	mov rax, s_open
-	mov rdi, [rbp + st_argv_1]
+	mov rdi, [rsp + arg_1]
 	mov rsi, o_rdonly
 	mov rdx, 0o444 ; r--r--r--
 	syscall ; rax is the file descriptor
-	mov [rbp + st_fd_in], rax
-	; open output file
+	mov [file_in], rax
 	mov rax, s_open
-	mov rdi, [rbp + st_argv_2]
+	mov rdi, [rsp + arg_2]
 	mov rsi, o_creat_wronly_trunc
 	mov rdx, 0o666 ; rw-rw-rw-
 	syscall
-	mov [rbp + st_fd_out], rax
-	
+	mov [file_out], rax
 .loop:
 	mov rax, s_read
-	mov rdi, [rbp + st_fd_in]
+	mov rdi, [file_in]
 	mov rsi, buffer_data
 	mov rdx, buffer_size
 	syscall
 	cmp rax, eof
 	jle .end
-	push buffer_data
 	push rax
+	mov rdi, rax
+	mov rax, buffer_data
 	call conv
 	pop rax
 	add rsp, 8
-	mov rdx, rax ; write
-	mov rax, s_write
-	mov rdi, [rbp + st_fd_out]
+	mov rdi, [file_out]
 	mov rsi, buffer_data
+	mov rdx, rax
+	mov rax, s_write
 	syscall
 	jmp .loop
 .end:
 	mov rax, s_close
-	mov rdi, [rbp + st_fd_in]
+	mov rdi, [file_in]
 	syscall
 	mov rax, s_close
-	mov rdi, [rbp + st_fd_out]
+	mov rdi, [file_out]
 	syscall
 	mov rax, s_exit
 	mov rdi, 0
 	syscall
-	
+
 	lower_s equ 'a'
 	lower_e equ 'z'
 	lower_shift equ 'A' - 'a'
-	st_buffer_len equ 16
-	st_buffer equ 24
 global conv:function
 conv:
+	; conv(char* buffer_addr, size_t length)
 	enter 0, 0
-	mov rax, [rbp + st_buffer]
-	mov rbx, [rbp + st_buffer_len]
-	mov rcx, 0
-	cmp rbx, 0
-	je .end
+	mov rcx, rdi
+	mov rsi, rax
+	test rcx, rcx
+	je .ret
 .loop:
-	mov dl, [rax + rcx]
+	mov dl, [rsi]
 	cmp dl, lower_s
 	jl .next
 	cmp dl, lower_e
 	jg .next
 	add dl, lower_shift
-	mov [rax + rcx], dl
+	; alt: and dl, 0b1101_1111
 .next:
-	inc rcx
-	cmp rcx, rbx
-	jl .loop
-.end:
+	mov [rsi], dl
+	inc rsi
+	loop .loop
+.ret:
 	leave
 	ret
