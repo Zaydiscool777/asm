@@ -121,6 +121,24 @@ because of `crt1.o`, you use `main` instead of `_start`.
 ld --dynamic-linker /lib64/ld-linux-x86-64.so.2 add_year_ip.o librecords.so -rpath $PWD -o e
 ```
 
+structs are in nasm:
+```nasm
+struc Cons
+  .car: resq 1
+  .cdr: resq 1
+endstruc ; Cons_len is 16, Cons.cdr is 8
+```
+to initialize in `section .data` (`.bss` is obvious):
+```nasm
+section .data
+  example:
+    istruc Cons
+      at Cons.car, dq 0
+      at Cons.cdr, dq 1
+    iend
+```
+
+
 # further information
 ## pgu suggestions
 ### Bottom Up
@@ -191,3 +209,6 @@ http://www.mindview.net/Books/TIJ/
     - `[r+r*c] (%,%,_)`
     - `[c+r*c] _(,%,_)`
     - `[r+c*r+c] _(%,%,_)` (really `[c+r+c*r]`)
+- https://www.xorpd.net/pages/xchg_rax/snip_00.html
+  - 64 intermediate nasm/yasm exercises.
+    - the goal is to find out what each program does.

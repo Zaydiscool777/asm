@@ -1,0 +1,97 @@
+Esolangs to put in assembly
+(note: this was imported from apple notes from iphone)
+esolangs.org
+
+Underload (interpreted)
+		•	Stack-based (shows Forth word if equivalent to it)
+		•	~ is swap
+		•	: is dup
+		•	! is drop
+		•	* concatenates (x y — xy)
+		•	(…) pushes everything inside
+		•	Parentheses must be balanced generally everywhere, including inside parentheses
+		•	a encloses top in parentheses
+		•	^ pops top and executes it
+		•	S pops top to output
+Strings in Underload can instead be a linked list of real strings. The head and tail are given with each “string” when in use. For example, (…) is just duplicating the inside into a singleton, * is joining two lists, and ^ executes each real string sequentially.
+Church numerals can be represented by strings such that when executed they duplicate the top string a number of times. For example, ::** is 3, !() is 0, and ()! is 1. These could be used to write and read arbitrary character (code)s rather than just the command characters.
+
+False (compiled)
+	•	Stack-based
+	•	32-bit positive integers
+	•	character (code)s: 'c
+	•	$ is dup
+	•	% is drop
+	•	\ is swap
+	•	@ is rot
+	•	ø is pick (0ø is just $)
+	•	arithmetic: +-*/
+	•	_ negates top
+	•	bitwise: &|~
+	•	comparison: <=
+	•	false is 0, true is ~0 (for return)
+	•	tests are for non-0
+	•	[…] pushes everything inside as a lambda (really just a procedure)
+	•	! pops top and executes it
+	•	? pops top two and executes top if second is true
+	•	# pops top two and executes top until second executed is true
+	•	variables are a-z
+	•	: pops two and stores second into top
+	•	; pops top and fetches from it
+	•	: and ; can be used for more than just variables; they are ! and @
+	•	^ reads a character and pushes its code or ~0 on EOF
+	•	, pops top and writes it to output as a character
+	•	"…" writes string inside…to output (boring, but at least newlines are verbatim)
+	•	. pops top and writes it to output as a 32-bit float (would be ok if there was bit shifting???)
+	•	ß flushes buffered input and output
+	•	{…} is a comment
+	•	` following a literal positive integer will compile it into a word (i would use `…` to compile assembly instead)
+For obvious reasons, ø and ß will be O and Z instead. 64-bit will be used instead of 32-bit. a-z could be extended to include A-Z. ()> could be used for shifting. Because lambdas are really just procedures, what gets pushed onto the stack can just be a pointer to a label.
+
+Unlambda (interpreted)
+	•	Functional (Combinatorial?)
+	•	`xy applies y to x
+	•	s, k, and i are like in SKI calculus
+	•	v is equivalent to `kv
+	•	.c returns its argument and prints the character following it (c)
+	•	r is equivalent to .\n
+	•	d evaluates the second argument before applying it to the first
+	•	c applies the current continuation (if an argument is passed to it, evaluation goes back to when c was evaluated, and makes c return that argument) to the argument
+	•	e exits with the argument as the result
+	•	@ discards an argument and reads a character in the current-character, and returns i on success or v otherwise
+	•	?c takes an argument and returns it if the current-character is the same as the character following it (c) or v otherwise
+	•	| returns an argument and prints the current-character, or returns v if it can’t or EOF is reached 
+Interpretation will be a bit hard. Applications could be handled using two states: the level of application, and which argument is currently being parsed.
+	⁃	x F: normal term -> x T (pushing term pointer)
+	⁃	x T: normal term -> x-1 F (calling term with past term)
+	⁃	x _: ` -> x+1 F
+The primitive combinators could be written in assembly, and there could be intermediate combinators: s1, s2, k1, d1, and c1. An alternative is to give each combinator a tag, and use the tag to interpret how its arguments are used. Perhaps somehow there could be two stacks, one for arguments and the other for combinators that did not yet get an argument.
+
+Ax (make this after Lisp)
+	•	Functional (Automaton)
+	•	Much like Lisp
+	•	Has atoms and cells
+	•	The only “atoms” are bytes as unsigned integers
+	•	[a b…c] is (a b… . c) in Lisp
+	•	Unlike Lisp, things are treated as data by default, and become code under execution rules
+	•	E means execute the thing
+	•	By default, execution of something is an infinite loop
+	•	The following “verbs” are “axioms”
+	•	E [s 0 o] is o (is)
+	•	E [s 1 o] is E [s o] + 1 (inc)
+	•	E [s 2 o] is undefined if o is 0, E s if o is 1, otherwise…well, it would be the identity excluding execution if s is [2 3 4 5…] (br)
+	•	E [s 3 a b] is E [E [s a] E [s b]] (ax)
+	•	E [s [a b] o] is E [E [s a b] E [s o]]
+	•	E [s 4 o] is 1 if E [s o] contains the same thing on both sides of the cell, or 0 if E [s o] contains different things (eq)
+	•	E [s 5 o] is randomly E [[s 0] o] or E [[s 1] o] (fz)
+	•	E [s 6 o] is 0 if E [s o] is an atom, or 1 if E [s o] is a cell (cel)
+	•	The following verbs are “idioms” (parentheses will be used for convenience)
+	•	E (a 7 b c) is E (a 3 b 0 c) (cmp)
+	•	or, E (E (a b) c)
+	•	E (a 8 b c d) is E (a c) if E (a b) is 0 or E (a d) if E (a b) is 1 (made for the purpose of short-circuiting) (if)
+	•	E (a 9 b c) is E (a 7 ((7 (2 1) b) 2 1) c) (cnk)
+	•	or, E ((E (a b) a) c)
+	•	E (a 10 b c) is E (a c) if b is an atom, or E (a 9 e 7 (2 3) c) if b is a cell (d e) (made for the purpose of compiler hints) (put)
+	•	E (a 11 b c) is (a 7 c 3 (2 1) 2 b) (arm)
+	•	The following verbs are “lemmas” (they all are of the form E (a n b), and are mildly trivial, executing E [a b] and use the resulting cell, infinitely looping on a negative value or division by 0)
+	•	12 decrements, 13 adds, 14 subtracts, 15 multiplies, 16 divides, 17 does the modulus, and 18 compares if the first is less than the second (dec add sub mul div mod lt)
